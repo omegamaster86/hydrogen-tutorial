@@ -1,6 +1,6 @@
 module.exports = {
   extends: ['plugin:hydrogen/recommended'],
   rules: {
-    indent: 'off',
+    indent: [error, 4],
   },
 };
