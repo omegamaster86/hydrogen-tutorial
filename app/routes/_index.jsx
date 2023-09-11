@@ -1,3 +1,5 @@
+import {useLoaderData} from '@remix-run/react';
+
 export function meta() {
   return [
     {title: 'Hydrogen'},
@@ -5,10 +7,24 @@ export function meta() {
   ];
 }
 
-export default function Index() {
-  return (
-    <div>
-      <h3>Hello from the home page!</h3>
-    </div>
-  );
+export async function loader({context}) {
+  return await context.storefront.query(COLLECTIONS_QUERY);
 }
+
+export default function Index() {
+  const {collections} = useLoaderData();
+  console.log(collections);
+  return <p>Hello from the home page!</p>;
+}
+
+const COLLECTIONS_QUERY = `#graphql
+  query FeaturedCollections {
+    collections(first: 3, query: "collection_type:smart") {
+      nodes {
+        id
+        title
+        handle
+      }
+    }
+  }
+`;
