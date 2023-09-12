@@ -9,6 +9,7 @@ import {
 import styles from './styles/app.css';
 import favicon from '../public/favicon.svg';
 import {Layout} from './components/Layout';
+import {useNonce} from '@shopify/hydrogen';
 
 export const links = () => {
   return [
@@ -34,6 +35,7 @@ export default function App() {
   const data = useLoaderData();
 
   const {name} = data.layout.shop;
+  const nonce = useNonce();
 
   return (
     <html lang="en">
@@ -47,8 +49,8 @@ export default function App() {
         <Layout title={name} >
           <Outlet />
         </Layout>
-        <ScrollRestoration />
-        <Scripts />
+        <ScrollRestoration nonce={nonce}/>
+        <Scripts nonce={nonce}/>
       </body>
     </html>
   );
