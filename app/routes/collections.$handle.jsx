@@ -1,12 +1,14 @@
 import {useLoaderData} from '@remix-run/react';
 import {json} from '@shopify/remix-oxygen';
+import ProductGrid from '../components/ProductGrid';
 
 const seo = ({data}) => ({
-    title: data?.collection?.title,
-    description: data?.collection?.description.substr(0, 154),
-  });
-  export const handle = {
-    seo,
+  title: data?.collection?.title,
+  description: data?.collection?.description.substr(0, 154),
+});
+
+export const handle = {
+  seo,
 };
 
 export async function loader({params, context}) {
@@ -29,6 +31,13 @@ export async function loader({params, context}) {
   });
 }
 
+export function meta({data}){
+  return [
+    {title: data?.collection?.title ?? 'Collection'},
+    {description: data?.collection?.description},
+  ];
+};
+
 export default function Collection() {
   const {collection} = useLoaderData();
   return (
@@ -48,6 +57,10 @@ export default function Collection() {
           </div>
         )}
       </header>
+      <ProductGrid
+        collection={collection}
+        url={`/collections/${collection.handle}`}
+      />
     </>
   );
 }
@@ -55,9 +68,37 @@ export default function Collection() {
 const COLLECTION_QUERY = `#graphql
   query CollectionDetails($handle: String!) {
     collection(handle: $handle) {
+      id
       title
       description
       handle
+      products(first: 4) {
+        nodes {
+          id
+          title
+          publishedAt
+          handle
+          variants(first: 1) {
+            nodes {
+              id
+              image {
+                url
+                altText
+                width
+                height
+              }
+              price {
+                amount
+                currencyCode
+              }
+              compareAtPrice {
+                amount
+                currencyCode
+              }
+            }
+          }
+        }
+      }
     }
   }
 `;
