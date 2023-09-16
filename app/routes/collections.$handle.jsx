@@ -1,6 +1,14 @@
 import {useLoaderData} from '@remix-run/react';
 import {json} from '@shopify/remix-oxygen';
 
+const seo = ({data}) => ({
+    title: data?.collection?.title,
+    description: data?.collection?.description.substr(0, 154),
+  });
+  export const handle = {
+    seo,
+};
+
 export async function loader({params, context}) {
   const {handle} = params;
   const {collection} = await context.storefront.query(COLLECTION_QUERY, {
