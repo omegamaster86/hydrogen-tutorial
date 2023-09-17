@@ -14,6 +14,7 @@ export function loader({params}) {
 export default function ProductHandle() {
   const {handle} = useLoaderData();
 
+  // ローダーデータをレンダリング
   return (
     <div className="product-wrapper">
       <h2>Product Handle: {handle}</h2>
