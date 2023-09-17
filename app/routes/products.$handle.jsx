@@ -48,6 +48,34 @@ const PRODUCT_QUERY = `#graphql
       title
       handle
       vendor
+      descriptionHtml
+      media(first: 10) {
+        nodes {
+          ... on MediaImage {
+            mediaContentType
+            image {
+              id
+              url
+              altText
+              width
+              height
+            }
+          }
+          ... on Model3d {
+            id
+            mediaContentType
+            sources {
+              mimeType
+              url
+            }
+          }
+        }
+      }
+      options {
+        name,
+        values
+      }
     }
   }
 `;
+
