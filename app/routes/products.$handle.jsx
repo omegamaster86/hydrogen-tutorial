@@ -21,3 +21,14 @@ export default function ProductHandle() {
     </div>
   );
 }
+
+const PRODUCT_QUERY = `#graphql
+  query product($handle: String!) {
+    product(handle: $handle) {
+      id
+      title
+      handle
+      vendor
+    }
+  }
+`;
