@@ -8,6 +8,8 @@ export function loader({params}) {
     handle
   });
 }
+// このコード例では、ローダー関数に渡されるURL ハンドル変数を paramsから取得し、
+// JSX コンポーネントで使用できるサンプル JSON を返す
 
 export default function ProductHandle() {
   const {handle} = useLoaderData();
