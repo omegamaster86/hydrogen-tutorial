@@ -1,10 +1,20 @@
-import {Link, useLocation,useSearchParams} from '@remix-run/react';
+import {
+    Link,
+    useLocation,
+    useSearchParams,
+    useNavigation,
+  } from '@remix-run/react';
 
 export default function ProductOptions({options}) {
+  const navigation = useNavigation();
   const {pathname, search} = useLocation();
   const [currentSearchParams] = useSearchParams();
 
-  const searchParams = currentSearchParams;
+    // Update the in-flight request data from the 'navigation' (if available)
+    // to create an optimistic UI that selects a link before the request completes
+    const searchParams = navigation.location
+    ? new URLSearchParams(navigation.location.search)
+    : currentSearchParams;
 
   return (
     <div className="grid gap-4 mb-6">
