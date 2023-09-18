@@ -1,6 +1,7 @@
 import {useLoaderData} from '@remix-run/react';
 import {json} from '@shopify/remix-oxygen';
 import {MediaFile} from '@shopify/hydrogen-react';
+import ProductOptions from '~/components/ProductOptions';
 
 export async function loader({params, context}) {
   const {handle} = params;
@@ -42,7 +43,7 @@ export default function ProductHandle() {
               {product.vendor}
             </span>
           </div>
-          <h3>Product Options TODO</h3>
+          <ProductOptions options={product.options} />
           <div
             className="prose border-t border-gray-200 pt-6 text-black text-md"
             dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
@@ -112,15 +113,6 @@ function ProductGallery({media}) {
 }
 
 
-
-// function PrintJson({data}) {
-//   return (
-//     <details className="outline outline-2 outline-blue-300 p-4 my-2">
-//       <summary>Product JSON</summary>
-//       <pre>{JSON.stringify(data, null, 2)}</pre>
-//     </details>
-//   );
-// }
 
 const PRODUCT_QUERY = `#graphql
   query product($handle: String!) {
