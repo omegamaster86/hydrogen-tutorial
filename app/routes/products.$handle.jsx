@@ -28,7 +28,7 @@ export async function loader({params, context, request}) {
     product,
   });
 }
-// このコード例では、ローダー関数に渡されるURL ハンドル変数を paramsから取得し、
+
 // JSX コンポーネントで使用できるサンプル JSON を返す
 
 export default function ProductHandle() {
@@ -123,7 +123,7 @@ function ProductGallery({media}) {
 
 
 const PRODUCT_QUERY = `#graphql
-  query product($handle: String!) {
+  query product($handle: String!, $selectedOptions: [SelectedOptionInput!]!) {
     product(handle: $handle) {
       id
       title
@@ -156,7 +156,60 @@ const PRODUCT_QUERY = `#graphql
         name,
         values
       }
+      selectedVariant: variantBySelectedOptions(selectedOptions: $selectedOptions) {
+        id
+        availableForSale
+        selectedOptions {
+          name
+          value
+        }
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        price {
+          amount
+          currencyCode
+        }
+        compareAtPrice {
+          amount
+          currencyCode
+        }
+        sku
+        title
+        unitPrice {
+          amount
+          currencyCode
+        }
+        product {
+          title
+          handle
+        }
+      }
+      variants(first: 1) {
+        nodes {
+          id
+          title
+          availableForSale
+          price {
+            currencyCode
+            amount
+          }
+          compareAtPrice {
+            currencyCode
+            amount
+          }
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
     }
   }
 `;
+
 
