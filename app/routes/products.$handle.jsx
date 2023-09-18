@@ -3,11 +3,20 @@ import {json} from '@shopify/remix-oxygen';
 import {MediaFile} from '@shopify/hydrogen-react';
 import ProductOptions from '~/components/ProductOptions';
 
-export async function loader({params, context}) {
+export async function loader({params, context, request}) {
   const {handle} = params;
+  const searchParams = new URL(request.url).searchParams;
+  const selectedOptions = [];
+
+  // set selected options from the query string
+  searchParams.forEach((value, name) => {
+    selectedOptions.push({name, value});
+  });
+
   const {product} = await context.storefront.query(PRODUCT_QUERY, {
     variables: {
       handle,
+      selectedOptions,
     },
   });
 
@@ -16,10 +25,9 @@ export async function loader({params, context}) {
   }
 
   return json({
-    handle,
     product,
   });
-};
+}
 // このコード例では、ローダー関数に渡されるURL ハンドル変数を paramsから取得し、
 // JSX コンポーネントで使用できるサンプル JSON を返す
 
