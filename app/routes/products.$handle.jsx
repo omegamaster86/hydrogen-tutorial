@@ -52,6 +52,8 @@ export default function ProductHandle() {
             </span>
           </div>
           <ProductOptions options={product.options} />
+          {/* Delete this after verifying */}
+          <p>Selected Variant: {product.selectedVariant?.id}</p>
           <div
             className="prose border-t border-gray-200 pt-6 text-black text-md"
             dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
