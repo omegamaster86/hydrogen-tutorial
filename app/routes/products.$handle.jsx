@@ -7,6 +7,8 @@ export async function loader({params, context, request}) {
   const {handle} = params;
   const searchParams = new URL(request.url).searchParams;
   const selectedOptions = [];
+  const storeDomain = context.storefront.getShopifyDomain();
+
 
   // set selected options from the query string
   searchParams.forEach((value, name) => {
@@ -17,6 +19,7 @@ export async function loader({params, context, request}) {
     variables: {
       handle,
       selectedOptions,
+      storeDomain,
     },
   });
 
