@@ -33,6 +33,7 @@ export async function loader({params, context, request}) {
   return json({
     product,
     selectedVariant,
+    storeDomain,
   });
 }
 
