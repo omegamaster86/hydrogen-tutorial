@@ -133,7 +133,9 @@ export class HydrogenSession {
 const cart = createCartHandler({
   storefront, // storefront is created by the createStorefrontClient
   getCartId: cartGetIdDefault(request.headers),
-  setCartId: cartSetIdDefault(),
+  setCartId: cartSetIdDefault({
+    maxage: 60 * 60 * 24 * 365, // 1 year expiry
+  }),
 });
 
 const handleRequest = createRequestHandler({
