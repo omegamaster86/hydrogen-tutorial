@@ -127,3 +127,23 @@ export class HydrogenSession {
     return this.sessionStorage.commitSession(this.session);
   }
 }
+
+// このcreateCartHandlerユーティリティは、Storefront API カート クエリを操作するためのオブジェクト
+// インスタンスを返します。
+const cart = createCartHandler({
+  storefront, // storefront is created by the createStorefrontClient
+  getCartId: cartGetIdDefault(request.headers),
+  setCartId: cartSetIdDefault(),
+});
+
+const handleRequest = createRequestHandler({
+  build: remixBuild,
+  mode: process.env.NODE_ENV,
+  getLoadContext: () => ({
+    session,
+    waitUntil,
+    storefront,
+    env,
+    cart, // Passed in cart instance
+  }),
+});
