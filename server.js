@@ -1,7 +1,14 @@
 // Virtual entry point for the app
 import * as remixBuild from '@remix-run/dev/server-build';
-import {createStorefrontClient, storefrontRedirect} from '@shopify/hydrogen';
 import {
+  createStorefrontClient, 
+  storefrontRedirect,
+  createCartHandler,
+  cartGetIdDefault,
+  cartSetIdDefault,
+} from '@shopify/hydrogen';
+import {
+  // createCartHandler,
   createRequestHandler,
   getStorefrontHeaders,
   createCookieSessionStorage,
@@ -44,10 +51,26 @@ export default {
        * Create a Remix request handler and pass
        * Hydrogen's Storefront client to the loader context.
        */
-      const handleRequest = createRequestHandler({
+       const handleRequest = createRequestHandler({
         build: remixBuild,
         mode: process.env.NODE_ENV,
-        getLoadContext: () => ({session, storefront, env, waitUntil}),
+        getLoadContext: () => ({
+          session,
+          waitUntil,
+          storefront,
+          env,
+          cart, // Passed in cart instance
+        }),
+      });
+
+      // このcreateCartHandlerユーティリティは、Storefront API カート クエリを操作するためのオブジェクト
+      // インスタンスを返します。
+      const cart = createCartHandler({
+        storefront, // storefront is created by the createStorefrontClient
+        getCartId: cartGetIdDefault(request.headers),
+        setCartId: cartSetIdDefault({
+          maxage: 60 * 60 * 24 * 365, // 1 year expiry
+        }),
       });
 
       const response = await handleRequest(request);
@@ -128,24 +151,6 @@ export class HydrogenSession {
   }
 }
 
-// このcreateCartHandlerユーティリティは、Storefront API カート クエリを操作するためのオブジェクト
-// インスタンスを返します。
-const cart = createCartHandler({
-  storefront, // storefront is created by the createStorefrontClient
-  getCartId: cartGetIdDefault(request.headers),
-  setCartId: cartSetIdDefault({
-    maxage: 60 * 60 * 24 * 365, // 1 year expiry
-  }),
-});
 
-const handleRequest = createRequestHandler({
-  build: remixBuild,
-  mode: process.env.NODE_ENV,
-  getLoadContext: () => ({
-    session,
-    waitUntil,
-    storefront,
-    env,
-    cart, // Passed in cart instance
-  }),
-});
+
+
