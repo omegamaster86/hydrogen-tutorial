@@ -22,7 +22,6 @@ export default function ProductOptions({options, selectedVariant}) {
         defaultParams.set(name, value);
       }
     }
-
     return defaultParams;
   })();
 
