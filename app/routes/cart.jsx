@@ -1,16 +1,22 @@
-import {Link, useLoaderData} from '@remix-run/react';
-import {json} from '@shopify/remix-oxygen';
 import {CartForm} from '@shopify/hydrogen';
+import {json} from '@shopify/remix-oxygen';
 
 export async function action({request, context}) {
+  // The Skeleton template already has a cart handler which is passed
+  // to the loader and action context.
   const {cart} = context;
 
   const formData = await request.formData();
   const {action, inputs} = CartForm.getFormInput(formData);
 
+  if (!action) {
+    throw new Error('No action provided');
+  }
+
+  let status = 200;
   let result;
 
-  switch(action) {
+  switch (action) {
     case CartForm.ACTIONS.LinesAdd:
       result = await cart.addLines(inputs.lines);
       break;
@@ -20,31 +26,36 @@ export async function action({request, context}) {
     case CartForm.ACTIONS.LinesRemove:
       result = await cart.removeLines(inputs.lineIds);
       break;
+    case CartForm.ACTIONS.DiscountCodesUpdate: {
+      const formDiscountCode = inputs.discountCode;
+
+      // User inputted discount code
+      const discountCodes = formDiscountCode ? [formDiscountCode] : [];
+
+      // Combine discount codes already applied on cart
+      discountCodes.push(...inputs.discountCodes);
+
+      result = await cart.updateDiscountCodes(discountCodes);
+      break;
+    }
     default:
-      invariant(false, `${action} cart action is not defined`);
+      throw new Error(`${action} cart action is not defined`);
   }
 
-  // The Cart ID might change after each mutation, so update it each time.
   const headers = cart.setCartId(result.cart.id);
+  const {cart: cartResult, errors} = result;
+
+  const redirectTo = formData.get('redirectTo') ?? null;
+  if (typeof redirectTo === 'string') {
+    status = 303;
+    headers.set('Location', redirectTo);
+  }
 
   return json(
-    result,
-    {status: 200, headers},
-  );
-}
-
-export default function Cart() {
-  return (
-    <div className="flex flex-col space-y-7 justify-center items-center md:py-8 md:px-12 px-4 py-6 h-screen">
-      <h2 className="whitespace-pre-wrap max-w-prose font-bold text-4xl">
-        Your cart is empty
-      </h2>
-      <Link
-        to="/"
-        className="inline-block rounded-sm font-medium text-center py-3 px-6 max-w-xl leading-none bg-black text-white w-full"
-      >
-        Continue shopping
-      </Link>
-    </div>
+    {
+      cart: cartResult,
+      errors,
+    },
+    {status, headers},
   );
 }
